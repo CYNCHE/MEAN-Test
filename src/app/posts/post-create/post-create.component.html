@@ -1,3 +1,7 @@
-<p>
-  post-create works!
-</p>
+<mat-card>
+  <mat-form-field>
+    <textarea matNativeControl name="" id="" cols="30" rows="10" #postInput></textarea>
+  </mat-form-field>
+</mat-card>
+
+<button (click)="onAddPost(postInput)"></button>
