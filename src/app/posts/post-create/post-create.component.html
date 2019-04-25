@@ -2,6 +2,6 @@
   <mat-form-field>
     <textarea matNativeControl name="" id="" cols="30" rows="10" #postInput></textarea>
   </mat-form-field>
+  <button mat-raised-button color="primary" (click)="onAddPost(postInput)">Publish the Post</button>
 </mat-card>
 
-<button (click)="onAddPost(postInput)"></button>
