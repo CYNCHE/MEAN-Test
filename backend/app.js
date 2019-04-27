@@ -7,6 +7,8 @@ const Post = require("./models/post");
 
 const app = express();
 
+// connect mongoose to mongodb and checks if the
+// connection is successful
 mongoose.connect('mongodb://localhost/myapp', {useNewUrlParser: true})
   .then(
     () => { console.log("connection succeeded")},
@@ -30,7 +32,9 @@ app.post("/api/posts", (req, res, next) => {
     title: req.body.title,
     content: req.body.content
   });
-  console.log(post );
+  // save to the mongodb
+  // the collection will be the plural of upur model
+  post.save();
   res.status(201).json({
     message: 'Post added successfully'
   });
