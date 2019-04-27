@@ -1,7 +1,16 @@
 <mat-card>
-  <mat-form-field>
-    <textarea matNativeControl name="" id="" cols="30" rows="10" #postInput></textarea>
-  </mat-form-field>
-  <button mat-raised-button color="primary" (click)="onAddPost(postInput)">Publish the Post</button>
+  <form #postForm="ngForm" (submit)="onAddPost(postForm)">
+    <mat-form-field>
+      <input matInput type="text" [(ngModel)]="enteredTitle" placeholder="Title" ngModel name="title" required #title="ngModel">
+      <mat-error *ngIf="title.invalid">Please enter a title for your post.</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <textarea matNativeControl cols="30" rows="10"
+      [(ngModel)]="enteredContent" placeholder="Enter content here."
+       ngModel name="content" required #content="ngModel"></textarea>
+       <mat-error *ngIf="content.invalid">Please enter some content for your post.</mat-error>
+    </mat-form-field>
+    <button mat-raised-button color="primary" type="submit">Publish the Post</button>
+  </form>
 </mat-card>
 
