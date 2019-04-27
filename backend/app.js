@@ -41,22 +41,15 @@ app.post("/api/posts", (req, res, next) => {
 })
 
 app.get('/api/posts', (req, res, next) => {
-  const posts = [
-    {
-      id: 'dsd3deef',
-      title: 'first post',
-      content: 'You are the best!'
-    },
-    {
-      id: 'dskdk2l2',
-      title: 'second post',
-      content: 'Never give up.'
-    }
-  ];
-  res.status(200).json({
-    message: 'Posts fetched successfully!',
-    posts: posts
-  });
+  Post.find()
+    .then(documents => {
+      // add in the callback so it won't be called before data fetched successfully
+      res.status(200).json({
+        message: 'Posts fetched successfully!',
+        posts: documents
+      });
+    });
+
 });
 
 module.exports = app;
