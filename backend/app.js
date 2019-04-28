@@ -26,7 +26,8 @@ app.use((req, res, next) => {
   next();
 });
 
-
+// handles the post request
+// add one new post
 app.post("/api/posts", (req, res, next) => {
   const post = new Post({
     title: req.body.title,
@@ -58,6 +59,7 @@ app.put("/api/posts/:id", (req, res, next) => {
     });
 });
 
+// handles get request for all the posts
 app.get('/api/posts', (req, res, next) => {
   Post.find()
     .then(documents => {
@@ -69,6 +71,17 @@ app.get('/api/posts', (req, res, next) => {
     });
 
 });
+
+// handles get request for single post given the post id
+app.get("/api/posts/:id", (req, res, next) => {
+  Post.findById(req.params.id).then(post => {
+    if (post) {
+      res.status(200).json(post);
+    } else {
+      res.status(404).json({message: 'Post not found'});
+    }
+  })
+})
 
 app.delete("/api/posts/:id", (req, res, next) => {
   // console.log(req.params.id);
