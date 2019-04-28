@@ -22,7 +22,7 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Headers",
                 "Origin, X-Requested-With, Content-Type, Accept");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
   next();
 });
 
@@ -40,8 +40,23 @@ app.post("/api/posts", (req, res, next) => {
       postId: createdPost._id
     });
   });
+});
 
-})
+// put will compleetely replace the old one
+// can also use patch to update an existing resource with new values
+app.put("/api/posts/:id", (req, res, next) => {
+  // need to make _id same as req.id since it is immutable
+  const post = new Post({
+    _id: req.body.id,
+    title: req.body.title,
+    content: req.body.content
+  });
+  Post.updateOne({_id: req.params.id}, post)
+    .then(result => {
+      console.log(result);
+      res.status(200).json({message: "Update successful!"})
+    });
+});
 
 app.get('/api/posts', (req, res, next) => {
   Post.find()
