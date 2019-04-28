@@ -49,14 +49,15 @@ export class PostsService {
         console.log(responseData.message);
         this.posts.push(post);
         // notify all subscribers
-        this.postsUpdated.next([...this.posts] );
+        this.postsUpdated.next([...this.posts]);
       });
   }
 
   deletePost(postId: string) {
     this.http.delete("http://localhost:3000/api/posts/" + postId)
       .subscribe(() => {
-        console.log('post deleted');
-      })
+        this.posts = this.posts.filter(post => post.id != postId);
+        this.postsUpdated.next([...this.posts]);
+      });
   }
 }
