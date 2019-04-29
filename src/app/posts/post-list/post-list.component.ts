@@ -20,10 +20,12 @@ export class PostListComponent implements OnInit, OnDestroy {
   // define a variable to hold the subscription
   // so that we can unsubscribe when the component is destroyed
   private postSub: Subscription;
+  isLoading = false;
 
   constructor(private postService: PostsService) { }
 
   ngOnInit() {
+    this.isLoading = true;
     this.postService.getPosts();
     // subscribe can take three arguments,
     // one is what to do when there is change to the data
@@ -31,6 +33,7 @@ export class PostListComponent implements OnInit, OnDestroy {
     // the last is what to do when complete
     this.postSub = this.postService.getPostUpdatedListener()
       .subscribe((posts: Post[]) => {
+        this.isLoading = false;
         this.posts = posts;
       });
   }

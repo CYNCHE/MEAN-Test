@@ -18,6 +18,8 @@ export class PostCreateComponent implements OnInit {
   private mode = 'create';
   private postId: string;
   public post: Post;
+  // indicator for spinner
+  public isLoading: boolean = false;
 
   // inject postService to get data,
   // ActivatedRoute to get the current post id
@@ -28,8 +30,10 @@ export class PostCreateComponent implements OnInit {
       if (paramMap.has('postId')) {
         this.mode = 'edit',
         this.postId = paramMap.get('postId');
+        this.isLoading = true;
         this.postsService.getPost(this.postId)
           .subscribe(postData => {
+            this.isLoading = false;
             this.post = {id: postData._id, title: postData.title, content: postData.content}
           });
       } else {
@@ -42,10 +46,11 @@ export class PostCreateComponent implements OnInit {
   onSavePost(postForm: NgForm) {
     console.log("here");
     if (postForm.invalid) return;
+    // no need to reset since we will navigate away
+    this.isLoading = true;
     if (this.mode === "create") {
       console.log("create");
       console.log(postForm.value.title);
-
       this.postsService.addPost(postForm.value.title, postForm.value.content);
     } else {
       console.log(postForm.value.title);
