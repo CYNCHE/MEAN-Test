@@ -17,7 +17,7 @@ const MIME_TYPE_MAP = {
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     // document path here is relative to server.js
-    cb(null, "backend/images");
+    // cb(null, "backend/images");
     // check for the validity in the backend
     const isValid = MIME_TYPE_MAP[file.mimetype];
     let error = new Error("Incorrect mime type");
@@ -33,7 +33,7 @@ const storage = multer.diskStorage({
     const ext = MIME_TYPE_MAP[file.mimetype];
     cb(null, name + '-' + Date.now() + '.' + ext);
   }
-})
+});
 
 
 
@@ -41,20 +41,33 @@ const storage = multer.diskStorage({
 
 // handles the post request
 // add one new post
-router.post("", (req, res, next) => {
+// single mean we are delaing with one single file in the image property of request body
+router.post("", multer({ storage: storage }).single('image'), (req, res, next) => {
+  // get the server url
+  const url = req.protocol + "://" + req.get("host");
   const post = new Post({
     title: req.body.title,
-    content: req.body.content
+    content: req.body.content,
+    // construct path to the image
+    imagePath: url + "/images/" + req.file.filename
   });
   // save to the mongodb
   // the collection will be the plural of upur model
   post.save().then(createdPost => {
     res.status(201).json({
       message: 'Post added successfully',
-      postId: createdPost._id
+      post: {
+        id: createdPost._id,
+        // title: createdPost.title,
+        // content: createdPost.content,
+        // imagePath: createdPost.imagePath
+        // spread operator to copy all the same name field
+        ...createdPost
+      }
     });
   });
 });
+
 
 // put will compleetely replace the old one
 // can also use patch to update an existing resource with new values
@@ -72,6 +85,7 @@ router.put("/:id", (req, res, next) => {
     });
 });
 
+
 // handles get request for all the posts
 router.get('', (req, res, next) => {
   Post.find()
@@ -82,8 +96,9 @@ router.get('', (req, res, next) => {
         posts: documents
       });
     });
-
 });
+
+
 
 // handles get request for single post given the post id
 router.get("/:id", (req, res, next) => {
