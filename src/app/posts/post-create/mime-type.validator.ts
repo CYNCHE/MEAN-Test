@@ -1,22 +1,29 @@
 import { AbstractControl } from '@angular/forms';
-import { Observable, Observer } from 'rxjs';
+import { Observable, Observer, of } from 'rxjs';
 
 export const mimeType = (
   control: AbstractControl
-  ): Promise<{[key: string]: any}> | Observable<{[key: string]: any}> => {
+): Promise<{ [key: string]: any }> | Observable<{ [key: string]: any }> => {
+
+  // if it is a string than this is an update without changing the image
+  // so validator should succeed
+  if (typeof (control.value === 'string')) {
+    return of(null);
+  }
+
   // tell Angular it is a file
   const file = control.value as File;
   const fileReader = new FileReader();
-  const frObs = Observable.create((observer: Observer<{[key: string]: any}>) => {
+  const frObs = Observable.create((observer: Observer<{ [key: string]: any }>) => {
     fileReader.addEventListener("loadend", () => {
       const arr = new Uint8Array(<ArrayBuffer>fileReader.result).subarray(0, 4);
       let header = "";
-      let isValid =  false;
+      let isValid = false;
       for (let i = 0; i < arr.length; i++) {
         header += arr[i].toString(16);
       }
       // check for certain pattern to see files type
-      switch(header) {
+      switch (header) {
         case "89504e47":
           isValid = true;
           break;

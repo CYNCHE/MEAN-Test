@@ -71,12 +71,18 @@ router.post("", multer({ storage: storage }).single('image'), (req, res, next) =
 
 // put will compleetely replace the old one
 // can also use patch to update an existing resource with new values
-router.put("/:id", (req, res, next) => {
+router.put("/:id", multer({ storage: storage }).single('image'), (req, res, next) => {
+  let imagePath = req.body.imagePath;
+  if (req.file) {
+    const url = req.protocol + "://" + req.get("host");
+    imagePath = url + "/images/" + req.file.filename;
+  }
   // need to make _id same as req.id since it is immutable
   const post = new Post({
     _id: req.body.id,
     title: req.body.title,
-    content: req.body.content
+    content: req.body.content,
+    imagePath: imagePath
   });
   Post.updateOne({_id: req.params.id}, post)
     .then(result => {
