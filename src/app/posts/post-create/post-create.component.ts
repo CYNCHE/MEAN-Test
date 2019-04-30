@@ -3,7 +3,7 @@ import { PostsService } from './../posts.service';
 import { Component, OnInit } from '@angular/core';
 import { NgForm, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Post } from '../post.model';
-import { Title } from '@angular/platform-browser';
+import { mimeType } from './mime-type.validator';
 
 
 @Component({
@@ -21,6 +21,8 @@ export class PostCreateComponent implements OnInit {
   // indicator for spinner
   public isLoading: boolean = false;
   form: FormGroup;
+  // for picture url
+  imagePreview: string;
 
   // inject postService to get data,
   // ActivatedRoute to get the current post id
@@ -30,7 +32,10 @@ export class PostCreateComponent implements OnInit {
     this.form = new FormGroup({
       // initial state and form control options(say validators)
       'title': new FormControl(null, { validators: [Validators.required, Validators.minLength(3)] }),
-      'content': new FormControl(null, { validators: [Validators.required] })
+      'content': new FormControl(null, { validators: [Validators.required] }),
+      // no need to bind this form control to any html template
+      // because we will use behind the scene
+      'image': new FormControl(null, { validators: Validators.required, asyncValidators: [mimeType]})
     });
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has('postId')) {
@@ -41,13 +46,29 @@ export class PostCreateComponent implements OnInit {
           .subscribe(postData => {
             this.isLoading = false;
             this.post = { id: postData._id, title: postData.title, content: postData.content };
-            this.form.setValue({ 'title': this.post.title, 'content': this.post.content });
+            this.form.setValue({ 'title': this.post.title, 'content': this.post.content, 'image': null });
           });
       } else {
         this.mode = 'create';
         this.postId = null;
       }
     });
+  }
+
+  onImagePicked(event: Event) {
+    const file = (event.target as HTMLInputElement).files[0];
+    this.form.patchValue({'image': file});
+    // informs Angular that the value has been changed
+    // and it should re-evaluate that, store that value
+    // and check it is valid
+    this.form.get('image').updateValueAndValidity();
+
+    // to create url for image
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.imagePreview = reader.result as string;
+    }
+    reader.readAsDataURL(file);
   }
 
   onSavePost() {
