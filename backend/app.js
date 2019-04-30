@@ -17,6 +17,11 @@ mongoose.connect('mongodb://localhost/myapp', {useNewUrlParser: true})
 
 app.use(bodyParser.json());
 
+// allow visitors to access image folder
+// use path to redirect
+const path = require('path');
+app.use("/images", express.static(path.join("backend/images")));
+
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
