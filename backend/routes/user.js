@@ -35,6 +35,7 @@ router.post("/signup", (req, res, next) => {
 
 
 router.post("/login", (req, res, next) => {
+  let fetchedUser;
   User.findOne({ email: req.body.email })
     // first check if the user exist in the database
     .then(user => {
@@ -43,6 +44,7 @@ router.post("/login", (req, res, next) => {
           message: "Auth failed. Please register first."
         });
       }
+      fetchedUser = user;
       return bcrypt.compare(req.body.password, user.password);
     })
     // check if the password is correct
@@ -52,11 +54,19 @@ router.post("/login", (req, res, next) => {
           message: "Auth failed. Incorrect password."
         });
       }
+
       // if password is correct, construct a JWT
       // which expires in one hour
-      const token = jwt.sign({ email: user.email, userId: user._id },
-                              'my-secret-hash-string',
-                              { expiresIn: '1h' });
+      const token = jwt.sign(
+        { email: fetchedUser.email, userId: fetchedUser._id },
+        'my-secret-hash-string',
+        { expiresIn: '1h' }
+      );
+
+      res.status(200).json({
+        token: token
+      })
+
     })
     .catch(err => {
       return res.status(401).json({
@@ -64,13 +74,6 @@ router.post("/login", (req, res, next) => {
       });
     });
 });
-
-
-
-
-
-
-
 
 
 
