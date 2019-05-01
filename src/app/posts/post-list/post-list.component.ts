@@ -21,6 +21,9 @@ export class PostListComponent implements OnInit, OnDestroy {
   // so that we can unsubscribe when the component is destroyed
   private postSub: Subscription;
   isLoading = false;
+  totalPosts = 10;
+  postsPerPage = 2;
+  pageSizeOptions = [1, 2, 5, 10];
 
   constructor(private postService: PostsService) { }
 
