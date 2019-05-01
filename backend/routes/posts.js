@@ -37,8 +37,6 @@ const storage = multer.diskStorage({
 
 
 
-
-
 // handles the post request
 // add one new post
 // single mean we are delaing with one single file in the image property of request body
