@@ -3,7 +3,9 @@ const bodyParser = require("body-parser");
 // require mongoose
 const mongoose = require("mongoose");
 
+// import routes module
 const postsRoutes = require("./routes/posts");
+const userRoutes = require("./routes/user");
 
 const app = express();
 
@@ -35,5 +37,9 @@ app.use((req, res, next) => {
 // make express aware of our routes
 // that start with "/api/posts"
 app.use("/api/posts", postsRoutes);
+
+// make express aware of our routes
+// that start with "/api/user"
+app.use("/api/user", userRoutes);
 
 module.exports = app;

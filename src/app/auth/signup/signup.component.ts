@@ -7,9 +7,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SignupComponent implements OnInit {
 
+  isLoading = false;
+
   constructor() { }
 
   ngOnInit() {
+  }
+
+  onSignup(form) {
+
   }
 
 }
