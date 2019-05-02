@@ -1,4 +1,5 @@
-import { HttpClientModule } from '@angular/common/http';
+import { AuthInterceptor } from './auth/auth-interceptor';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
@@ -46,7 +47,11 @@ import { SignupComponent } from './auth/signup/signup.component';
     HttpClientModule,
     MatPaginatorModule
   ],
-  providers: [],
+  providers: [
+    // multi property tells Angular not to override the existing
+    // interceptors, add additional AuthInterceptor
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
