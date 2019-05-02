@@ -11,7 +11,6 @@ export class LoginComponent implements OnInit {
 
   isLoading = false;
 
-
   constructor(private authService: AuthService) { }
 
   ngOnInit() {
@@ -19,7 +18,8 @@ export class LoginComponent implements OnInit {
 
   onLogin(form: NgForm) {
     if (form.invalid) return;
-    console.log("login");
+    // console.log("login");
+    this.isLoading = true;
     this.authService.login(form.value.email, form.value.password);
   }
 

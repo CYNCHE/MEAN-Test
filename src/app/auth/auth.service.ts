@@ -2,6 +2,7 @@ import { AuthData } from './auth-data.model';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,7 @@ export class AuthService {
   // variable to conveniently show whether the user has logged in
   private isAuthenticated: boolean = false;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private router: Router) { }
 
 
   getToken() {
@@ -48,6 +49,7 @@ export class AuthService {
         if (token) {
           this.isAuthenticated = true;
           this.authStatusListener.next(true);
+          this.router.navigate(['/']);
         }
       });
   }
@@ -56,5 +58,6 @@ export class AuthService {
     this.token = null;
     this.isAuthenticated = false;
     this.authStatusListener.next(false);
+    this.router.navigate(['/']);
   }
 }
