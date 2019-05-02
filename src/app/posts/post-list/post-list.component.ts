@@ -1,3 +1,4 @@
+import { AuthService } from './../../auth/auth.service';
 import { PostsService } from './../posts.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Post } from '../post.model';
@@ -28,7 +29,11 @@ export class PostListComponent implements OnInit, OnDestroy {
   currentPage = 1;
   pageSizeOptions = [1, 2, 5, 10];
 
-  constructor(private postService: PostsService) { }
+  // subscription to use status
+  userIsAuthenticated: boolean = false;
+  private authStatusSub: Subscription;
+
+  constructor(private postService: PostsService, private authService: AuthService) { }
 
   ngOnInit() {
     this.isLoading = true;
@@ -38,28 +43,34 @@ export class PostListComponent implements OnInit, OnDestroy {
     // another what to do when error occurs
     // the last is what to do when complete
     this.postSub = this.postService.getPostUpdatedListener()
-      .subscribe((postsData: { posts:Post[], postCount: number }) => {
+      .subscribe((postsData: { posts: Post[], postCount: number }) => {
         this.isLoading = false;
         console.log(postsData);
         this.totalPosts = postsData.postCount;
         this.posts = postsData.posts;
+      });
+    this.userIsAuthenticated = this.authService.getIsAuthenticated();
+    this.authStatusSub = this.authService
+      .getAuthStatusListener()
+      .subscribe(isAuthenticated => {
+        this.userIsAuthenticated = isAuthenticated;
       });
   }
 
   onDelete(postId: string) {
     this.isLoading = true;
     this.postService.deletePost(postId)
-    .subscribe(() => {
-      // console.log(this.totalPosts);
-      // console.log(this.currentPage);
+      .subscribe(() => {
+        // console.log(this.totalPosts);
+        // console.log(this.currentPage);
 
-      // deal with the case when current page > 1 and delete the last
-      // post in the page but the list does not go forward
-      if ((this.totalPosts - 1) / this.postsPerPage < this.currentPage && this.currentPage > 1) {
-        this.postService.getPosts(this.postsPerPage, this.currentPage - 1);
-      }
-      else this.postService.getPosts(this.postsPerPage, this.currentPage);
-    });
+        // deal with the case when current page > 1 and delete the last
+        // post in the page but the list does not go forward
+        if ((this.totalPosts - 1) / this.postsPerPage < this.currentPage && this.currentPage > 1) {
+          this.postService.getPosts(this.postsPerPage, this.currentPage - 1);
+        }
+        else this.postService.getPosts(this.postsPerPage, this.currentPage);
+      });
   }
 
   onChangedPage(pageData: PageEvent) {
@@ -73,6 +84,7 @@ export class PostListComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.postSub.unsubscribe();
+    this.authStatusSub.unsubscribe();
   }
 
 }

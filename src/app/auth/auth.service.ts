@@ -1,6 +1,7 @@
 import { AuthData } from './auth-data.model';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,10 @@ export class AuthService {
 
   // holds our token information
   private token: string;
+  // indicator to other component whether we have logged in or not
+  private authStatusListener = new Subject<boolean>();
+  // variable to conveniently show whether the user has logged in
+  private isAuthenticated: boolean = false;
 
   constructor(private http: HttpClient) { }
 
@@ -17,6 +22,14 @@ export class AuthService {
     return this.token;
   }
 
+  // prevent emitting values from other components
+  getAuthStatusListener() {
+    return this.authStatusListener.asObservable();
+  }
+
+  getIsAuthenticated() {
+    return this.isAuthenticated;
+  }
 
   createUser(email: string, password: string) {
     const authData: AuthData = { email: email, password: password };
@@ -32,6 +45,10 @@ export class AuthService {
       .subscribe(response => {
         const token = response.token;
         this.token = token;
-      })
+        if (token) {
+          this.isAuthenticated = true;
+          this.authStatusListener.next(true);
+        }
+      });
   }
 }
