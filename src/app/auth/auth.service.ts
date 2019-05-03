@@ -90,6 +90,8 @@ export class AuthService {
     if (!authInformation) return;
     const now = new Date();
     const duration = authInformation.expirationDate.getTime() - now.getTime();
+
+
     if (duration > 0) {
       this.token = authInformation.token;
       this.isAuthenticated = true;
