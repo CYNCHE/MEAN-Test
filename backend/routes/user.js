@@ -63,8 +63,10 @@ router.post("/login", (req, res, next) => {
         { expiresIn: '1h' }
       );
 
+      // make token expires in 1h
       res.status(200).json({
-        token: token
+        token: token,
+        expiresIn: 3600
       })
 
     })
