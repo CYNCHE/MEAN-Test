@@ -22,6 +22,7 @@ export class PostListComponent implements OnInit, OnDestroy {
   // define a variable to hold the subscription
   // so that we can unsubscribe when the component is destroyed
   private postSub: Subscription;
+  userId: string;
   isLoading = false;
   totalPosts = 0;
   postsPerPage = 2;
@@ -38,6 +39,7 @@ export class PostListComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.isLoading = true;
     this.postService.getPosts(this.postsPerPage, 1);
+    this.userId = this.authService.getUserId();
     // subscribe can take three arguments,
     // one is what to do when there is change to the data
     // another what to do when error occurs
@@ -54,6 +56,7 @@ export class PostListComponent implements OnInit, OnDestroy {
       .getAuthStatusListener()
       .subscribe(isAuthenticated => {
         this.userIsAuthenticated = isAuthenticated;
+        this.userId = this.authService.getUserId();
       });
   }
 
